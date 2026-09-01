@@ -59,8 +59,8 @@ export const BookingSummary = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-32">
-      <div className="bg-slate-900 text-white px-4 pt-12 pb-10 shadow-sm flex items-center sticky top-0 z-20">
+    <div className="flex flex-col flex-1 bg-slate-50">
+      <div className="bg-slate-900 text-white px-4 pt-12 pb-10 shadow-sm flex items-center sticky top-0 z-20 shrink-0">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-slate-800 text-white">
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -206,7 +206,7 @@ export const BookingSummary = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white max-w-[480px] mx-auto z-50">
+      <div className="mt-auto sticky bottom-0 left-0 right-0 p-4 bg-white z-50 shrink-0 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
         <Button className="w-full py-6 h-auto text-lg rounded-2xl" onClick={handleConfirm}>
           CONFIRM BOOKING
         </Button>

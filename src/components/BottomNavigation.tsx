@@ -5,7 +5,7 @@ import { cn } from './ui';
 
 export const BottomNavigation = () => {
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50 w-full bg-white border-t border-slate-100 pb-safe">
+    <div className="z-50 w-full bg-white border-t border-slate-100 pb-safe shrink-0">
       <div className="flex items-center justify-around h-16">
         <NavItem to="/home" icon={<Home className="w-6 h-6" />} label="Home" />
         <NavItem to="/bookings" icon={<Calendar className="w-6 h-6" />} label="Bookings" />

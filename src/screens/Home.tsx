@@ -54,7 +54,7 @@ export const Home = () => {
   const initials = getInitials();
 
   return (
-    <div className="flex flex-col pb-6">
+    <div className="flex flex-col flex-1 pb-safe mb-10">
       {/* Header */}
       <div className="bg-slate-900 text-white px-6 pt-12 pb-10 rounded-b-[3rem] shadow-md z-10 relative">
         <div className="flex justify-between items-center mb-6">

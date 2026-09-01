@@ -74,9 +74,9 @@ export const SelectLocation = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-24">
+    <div className="flex flex-col flex-1 bg-slate-50">
       {/* Header */}
-      <div className="bg-slate-900 text-white px-4 pt-12 pb-6 rounded-b-[2rem] shadow-sm flex items-center sticky top-0 z-20">
+      <div className="bg-slate-900 text-white px-4 pt-12 pb-6 rounded-b-[2rem] shadow-sm flex items-center sticky top-0 z-20 shrink-0">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-slate-800 text-white transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -164,7 +164,7 @@ export const SelectLocation = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 max-w-[480px] mx-auto z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+      <div className="mt-auto sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe shrink-0">
         <Button className="w-full font-bold text-sm py-4" disabled={!confirmed} onClick={handleContinue}>
           CONTINUE
         </Button>

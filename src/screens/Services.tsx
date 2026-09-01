@@ -30,9 +30,9 @@ export const Services = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-6">
+    <div className="flex flex-col flex-1 bg-slate-50 pb-6">
       {/* Header */}
-      <div className="bg-slate-900 text-white px-4 pt-12 pb-6 rounded-b-[2rem] shadow-sm flex items-center sticky top-0 z-20">
+      <div className="bg-slate-900 text-white px-4 pt-12 pb-6 rounded-b-[2rem] shadow-sm flex items-center sticky top-0 z-20 shrink-0">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-slate-800 text-white transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </button>

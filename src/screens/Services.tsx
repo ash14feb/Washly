@@ -9,7 +9,20 @@ export const Services = () => {
   const navigate = useNavigate();
   const { bookingState, updateBooking } = useBooking();
 
-  const services = mockServices.filter(s => s.vehicleType === bookingState.vehicleType);
+  const getDynamicPrice = (service: any) => {
+    let basePrice = service.price;
+    if (service.vehicleType === 'car' && bookingState.vehicleName) {
+      if (bookingState.vehicleName.includes('Sedan')) basePrice += 100;
+      else if (bookingState.vehicleName.includes('SUV')) basePrice += 200;
+      else if (bookingState.vehicleName.includes('Luxury')) basePrice += 300;
+    }
+    return basePrice;
+  };
+
+  const services = mockServices.filter(s => s.vehicleType === bookingState.vehicleType).map(s => ({
+    ...s,
+    price: getDynamicPrice(s)
+  }));
 
   const handleSelectService = (service: any) => {
     updateBooking({ service });
@@ -45,15 +58,17 @@ export const Services = () => {
               </div>
             </div>
             
-            <div className="space-y-2 mb-6">
+            <div className="space-y-3 mb-6">
               {service.features.slice(0, 4).map((feature, idx) => (
                 <div key={idx} className="flex items-start">
-                  <Check className="w-4 h-4 text-indigo-600 mr-2 mt-0.5 shrink-0" />
-                  <span className="text-sm text-slate-600 font-medium">{feature}</span>
+                  <div className="w-5 h-5 rounded-full bg-indigo-50 flex items-center justify-center mr-3 mt-0.5 shrink-0 border border-indigo-100">
+                    <Check className="w-3.5 h-3.5 text-indigo-600" strokeWidth={2.5} />
+                  </div>
+                  <span className="text-sm text-slate-600 font-medium leading-relaxed">{feature}</span>
                 </div>
               ))}
               {service.features.length > 4 && (
-                <p className="text-sm text-slate-400 ml-6 font-medium italic">+ {service.features.length - 4} more</p>
+                <p className="text-sm text-slate-400 ml-8 font-medium italic">+ {service.features.length - 4} more</p>
               )}
             </div>
             

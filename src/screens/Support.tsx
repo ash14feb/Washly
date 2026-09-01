@@ -39,7 +39,9 @@ export const Support = () => {
         <div className="space-y-4 mb-10">
           {faqs.map((faq, idx) => (
             <div key={idx} className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-start">
-              <HelpCircle className="w-5 h-5 text-indigo-500 mr-3 shrink-0 mt-0.5" />
+              <div className="w-8 h-8 rounded-[10px] bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center mr-4 shrink-0 border border-indigo-100 shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)]">
+                <HelpCircle className="w-4 h-4 text-indigo-600 drop-shadow-sm" strokeWidth={2} />
+              </div>
               <div>
                 <h4 className="font-bold text-slate-900 mb-1">{faq.q}</h4>
                 <p className="text-sm text-slate-500 leading-relaxed font-medium">{faq.a}</p>

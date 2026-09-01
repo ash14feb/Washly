@@ -13,7 +13,7 @@ export const Offers = () => {
         {mockOffers.map(offer => (
           <div key={offer.id} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 flex relative">
             <div className="w-1/3 bg-indigo-600 p-4 flex flex-col justify-center items-center text-white text-center relative border-r-2 border-dashed border-white">
-              <Ticket className="w-8 h-8 mb-2 opacity-80" />
+              <Ticket className="w-8 h-8 mb-2 text-indigo-200 drop-shadow-md" strokeWidth={1.5} />
               <span className="text-2xl font-black leading-none mb-1 text-lime-400">
                 {offer.type === 'flat' ? `₹${offer.discount}` : `${offer.discount}%`}
               </span>

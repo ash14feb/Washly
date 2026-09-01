@@ -17,7 +17,7 @@ const slides = [
   {
     title: "Your Water. Your Power. Our Care.",
     description: "We bring professional equipment directly to your location.",
-    image: "https://images.unsplash.com/photo-1587588079047-9750058b8d4e?auto=format&fit=crop&w=800&q=80"
+    image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80"
   }
 ];
 
@@ -27,7 +27,7 @@ export const Onboarding = () => {
 
   const handleNext = () => {
     if (currentSlide === slides.length - 1) {
-      navigate('/home');
+      navigate('/login');
     } else {
       setCurrentSlide(prev => prev + 1);
     }
@@ -81,7 +81,7 @@ export const Onboarding = () => {
           <Button variant="secondary" size="lg" className="w-full font-bold text-slate-900" onClick={handleNext}>
             {currentSlide === slides.length - 1 ? "GET STARTED" : "NEXT"}
           </Button>
-          <Button variant="ghost" className="w-full text-slate-400 hover:text-white" onClick={() => navigate('/home')}>
+          <Button variant="ghost" className="w-full text-slate-400 hover:text-white" onClick={() => navigate('/login')}>
             SKIP
           </Button>
         </div>

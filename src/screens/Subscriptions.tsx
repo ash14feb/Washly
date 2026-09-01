@@ -37,8 +37,10 @@ export const Subscriptions = () => {
               <div className="space-y-4 mb-8">
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="flex items-start">
-                    <Check className={`w-5 h-5 mr-3 shrink-0 ${plan.popular ? 'text-lime-400' : 'text-indigo-400'}`} />
-                    <span className="font-bold">{feature}</span>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 shrink-0 ${plan.popular ? 'bg-lime-400/20 text-lime-400' : 'bg-indigo-500/20 text-indigo-400'}`}>
+                      <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                    </div>
+                    <span className="font-bold pt-0.5">{feature}</span>
                   </div>
                 ))}
               </div>

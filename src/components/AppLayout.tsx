@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export const AppLayout = () => {
   const location = useLocation();
-  const hideNavRoutes = ['/', '/onboarding', '/success'];
+  const hideNavRoutes = ['/', '/onboarding', '/success', '/login', '/verify-otp', '/register', '/edit-profile'];
   const showNav = !hideNavRoutes.includes(location.pathname);
 
   return (

@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useBooking } from '../context/BookingContext';
 import { Button } from '../components/ui';
 
-const dates = [
-  { id: 'd1', label: 'TODAY', date: '27 AUG' },
-  { id: 'd2', label: 'TOMORROW', date: '28 AUG' },
-  { id: 'd3', label: 'SAT', date: '29 AUG' },
-  { id: 'd4', label: 'SUN', date: '30 AUG' },
-];
+const generateDates = () => {
+  const dates = [];
+  const today = new Date();
+  
+  for (let i = 0; i < 4; i++) {
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + i);
+    
+    let label = '';
+    if (i === 0) label = 'TODAY';
+    else if (i === 1) label = 'TOMORROW';
+    else label = nextDate.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+    
+    const day = nextDate.getDate().toString().padStart(2, '0');
+    const month = nextDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    
+    dates.push({
+      id: `d${i+1}`,
+      label,
+      date: `${day} ${month}`,
+      fullDate: nextDate
+    });
+  }
+  return dates;
+};
 
 const timeSlots = [
   '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
@@ -19,12 +38,41 @@ const timeSlots = [
 export const SelectDateTime = () => {
   const navigate = useNavigate();
   const { updateBooking } = useBooking();
+  const [dates] = useState(generateDates());
   const [selectedDate, setSelectedDate] = useState(dates[0].id);
-  const [selectedTime, setSelectedTime] = useState(timeSlots[1]);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Select first available time when date changes
+    const availableSlots = timeSlots.filter(t => !isSlotExpired(t));
+    if (availableSlots.length > 0) {
+      setSelectedTime(availableSlots[0]);
+    } else {
+      setSelectedTime(null);
+    }
+  }, [selectedDate]);
+
+  const isSlotExpired = (time: string) => {
+    if (selectedDate !== 'd1') return false; // Not today
+    
+    const now = new Date();
+    const [timeStr, ampm] = time.split(' ');
+    let [hours, minutes] = timeStr.split(':').map(Number);
+    
+    if (ampm === 'PM' && hours !== 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+    
+    const slotTime = new Date();
+    slotTime.setHours(hours, minutes, 0, 0);
+    
+    return now >= slotTime;
+  };
 
   const handleContinue = () => {
+    if (!selectedTime) return;
     const d = dates.find(x => x.id === selectedDate);
-    updateBooking({ date: `${d?.date} 2026`, time: selectedTime });
+    const year = d?.fullDate.getFullYear() || new Date().getFullYear();
+    updateBooking({ date: `${d?.date} ${year}`, time: selectedTime });
     navigate('/summary');
   };
 
@@ -66,19 +114,24 @@ export const SelectDateTime = () => {
 
         <h3 className="font-bold text-slate-900 mt-8 mb-4 text-lg">Select Time</h3>
         <div className="grid grid-cols-3 gap-3">
-          {timeSlots.map(time => (
-            <button
-              key={time}
-              onClick={() => setSelectedTime(time)}
-              className={`py-4 rounded-2xl border-2 font-bold text-sm transition-all shadow-sm ${
-                selectedTime === time
-                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                  : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200'
-              }`}
-            >
-              {time}
-            </button>
-          ))}
+          {timeSlots.map(time => {
+            const expired = isSlotExpired(time);
+            return (
+              <button
+                key={time}
+                onClick={() => !expired && setSelectedTime(time)}
+                disabled={expired}
+                className={`py-4 rounded-2xl border-2 font-bold text-sm transition-all shadow-sm ${
+                  expired ? 'border-slate-100 bg-slate-50 text-slate-400 opacity-50 cursor-not-allowed'
+                  : selectedTime === time
+                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                    : 'border-slate-100 bg-white text-slate-600 hover:border-slate-200'
+                }`}
+              >
+                {time}
+              </button>
+            );
+          })}
         </div>
       </div>
 

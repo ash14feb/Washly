@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, ChevronRight, Car, Bike, Sparkles, CheckCircle2, Droplets, Zap } from 'lucide-react';
 import { Button } from '../components/ui';
 import { useBooking } from '../context/BookingContext';
+import { useAuth } from '../context/AuthContext';
 
 export const Home = () => {
   const navigate = useNavigate();
   const { updateBooking, resetBooking } = useBooking();
+  const { user } = useAuth();
+  
+  const [locationName, setLocationName] = useState('Detecting location...');
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            const data = await res.json();
+            const city = data.address.city || data.address.town || data.address.state_district || 'Your Location';
+            const state = data.address.state || '';
+            setLocationName(`${city}${state ? `, ${state}` : ''}`);
+          } catch (error) {
+            setLocationName('Mysuru, Karnataka');
+          }
+        },
+        () => {
+          setLocationName('Mysuru, Karnataka');
+        }
+      );
+    } else {
+      setLocationName('Mysuru, Karnataka');
+    }
+  }, []);
 
   const handleStartBooking = (vehicleType?: 'car' | 'bike') => {
     resetBooking();
@@ -18,6 +46,13 @@ export const Home = () => {
     }
   };
 
+  const displayName = user && user.firstName ? `${user.firstName} ${user.lastName}` : 'Guest User';
+  const getInitials = () => {
+    if (!user || !user.firstName || !user.lastName) return 'G';
+    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+  };
+  const initials = getInitials();
+
   return (
     <div className="flex flex-col pb-6">
       {/* Header */}
@@ -25,17 +60,17 @@ export const Home = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <p className="text-xs opacity-60 mb-1 tracking-wider uppercase">Welcome back,</p>
-            <h1 className="text-lg font-bold">Ashwaq Ahmed 👋</h1>
+            <h1 className="text-lg font-bold">{displayName} 👋</h1>
           </div>
           <div className="w-12 h-12 bg-lime-400 rounded-full flex items-center justify-center font-bold text-slate-900 text-lg">
-             AA
+             {initials}
           </div>
         </div>
         
         <div className="flex items-center text-sm bg-slate-800 p-3 rounded-2xl">
-          <MapPin className="w-4 h-4 text-lime-400 mr-2" />
-          <span className="flex-1 font-medium truncate">Mysuru, Karnataka</span>
-          <span className="text-xs text-lime-400 cursor-pointer font-bold">Change</span>
+          <MapPin className="w-4 h-4 text-lime-400 mr-2 shrink-0" />
+          <span className="flex-1 font-medium truncate">{locationName}</span>
+          <span className="text-xs text-lime-400 cursor-pointer font-bold shrink-0 ml-2">Change</span>
         </div>
       </div>
 
@@ -63,23 +98,29 @@ export const Home = () => {
         <div className="flex gap-4">
           <button 
             onClick={() => handleStartBooking('car')}
-            className="flex-1 bg-sky-50 rounded-[2rem] p-5 border-2 border-transparent hover:border-sky-300 transition-all flex flex-col justify-center shadow-sm"
+            className="flex-1 bg-white rounded-[2rem] p-5 border border-slate-100 hover:border-indigo-300 transition-all flex flex-col justify-center shadow-sm relative overflow-hidden group"
           >
-            <div className="text-3xl mb-2 text-left">🚗</div>
-            <div className="text-left">
-              <span className="font-bold text-slate-900 block mb-0.5">Car</span>
-              <span className="text-[10px] text-slate-500 font-medium">From ₹199</span>
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-14 h-14 bg-gradient-to-br from-indigo-100 to-indigo-50 rounded-2xl flex items-center justify-center mb-4 shadow-[inset_0_2px_4px_rgba(255,255,255,0.5)] border border-indigo-100 relative z-10">
+              <Car className="w-7 h-7 text-indigo-600 drop-shadow-sm" strokeWidth={1.5} />
+            </div>
+            <div className="text-left relative z-10">
+              <span className="font-bold text-slate-900 block mb-0.5 text-lg">Car</span>
+              <span className="text-xs text-slate-500 font-medium">From ₹199</span>
             </div>
           </button>
           
           <button 
             onClick={() => handleStartBooking('bike')}
-            className="flex-1 bg-lime-50 rounded-[2rem] p-5 border-2 border-transparent hover:border-lime-300 transition-all flex flex-col justify-center shadow-sm"
+            className="flex-1 bg-white rounded-[2rem] p-5 border border-slate-100 hover:border-lime-300 transition-all flex flex-col justify-center shadow-sm relative overflow-hidden group"
           >
-            <div className="text-3xl mb-2 text-left">🏍️</div>
-            <div className="text-left">
-              <span className="font-bold text-slate-900 block mb-0.5">Bike</span>
-              <span className="text-[10px] text-slate-500 font-medium">From ₹99</span>
+            <div className="absolute inset-0 bg-gradient-to-br from-lime-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-14 h-14 bg-gradient-to-br from-lime-100 to-lime-50 rounded-2xl flex items-center justify-center mb-4 shadow-[inset_0_2px_4px_rgba(255,255,255,0.5)] border border-lime-100 relative z-10">
+              <Bike className="w-7 h-7 text-lime-600 drop-shadow-sm" strokeWidth={1.5} />
+            </div>
+            <div className="text-left relative z-10">
+              <span className="font-bold text-slate-900 block mb-0.5 text-lg">Bike</span>
+              <span className="text-xs text-slate-500 font-medium">From ₹99</span>
             </div>
           </button>
         </div>
@@ -154,12 +195,13 @@ export const Home = () => {
 };
 
 const WhyCard = ({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) => (
-  <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex flex-col">
-    <div className="mb-2 bg-slate-50 w-8 h-8 rounded-full flex items-center justify-center">
-      {icon}
+  <div className="bg-white p-4 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col items-start relative overflow-hidden group hover:shadow-md transition-all">
+    <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <div className="mb-3 bg-gradient-to-br from-slate-100 to-slate-50 w-12 h-12 rounded-2xl flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] border border-slate-100 relative z-10">
+      {React.cloneElement(icon as React.ReactElement, { strokeWidth: 1.5, className: `${(icon as React.ReactElement).props.className} drop-shadow-sm w-6 h-6` })}
     </div>
-    <span className="font-semibold text-slate-900 text-sm mb-0.5">{title}</span>
-    <span className="text-xs text-slate-500 leading-tight">{desc}</span>
+    <span className="font-bold text-slate-900 text-sm mb-1 relative z-10">{title}</span>
+    <span className="text-xs text-slate-500 font-medium leading-tight relative z-10">{desc}</span>
   </div>
 );
 

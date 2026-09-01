@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Plus } from 'lucide-react';
+import { ChevronLeft, MapPin, Plus, Navigation, Loader2, AlertCircle } from 'lucide-react';
 import { mockLocations } from '../data';
 import { useBooking } from '../context/BookingContext';
 import { Button } from '../components/ui';
@@ -11,8 +11,62 @@ export const SelectLocation = () => {
   const [selectedId, setSelectedId] = useState(bookingState.location?.id || mockLocations[0].id);
   const [confirmed, setConfirmed] = useState(false);
 
+  const [currentLocation, setCurrentLocation] = useState<{id: string, name: string, address: string, lat?: number, lon?: number} | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCurrentLocation();
+  }, []);
+
+  const fetchCurrentLocation = () => {
+    setIsLocating(true);
+    setLocationError(null);
+
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser");
+      setIsLocating(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          if (!res.ok) throw new Error("Failed to fetch from OpenStreetMap");
+          const data = await res.json();
+          
+          const address = data.display_name || "Unknown Location";
+          
+          setCurrentLocation({
+            id: 'current',
+            name: 'Current Location',
+            address,
+            lat: latitude,
+            lon: longitude
+          });
+          setSelectedId('current');
+        } catch (error) {
+          setLocationError("Failed to fetch address details");
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        setLocationError("Please enable location permissions to use your current location");
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
+
   const handleContinue = () => {
-    const loc = mockLocations.find(l => l.id === selectedId);
+    let loc = mockLocations.find(l => l.id === selectedId);
+    if (selectedId === 'current' && currentLocation) {
+      loc = currentLocation;
+    }
+    
     if (loc && confirmed) {
       updateBooking({ location: loc });
       navigate('/select-time');
@@ -30,17 +84,44 @@ export const SelectLocation = () => {
       </div>
 
       <div className="p-6">
-        <div className="w-full h-32 bg-slate-200 rounded-3xl mb-8 overflow-hidden relative shadow-sm">
+        <div className="w-full h-32 bg-slate-200 rounded-3xl mb-6 overflow-hidden relative shadow-sm">
           <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80" alt="Map" className="w-full h-full object-cover opacity-50 grayscale" />
           <div className="absolute inset-0 flex items-center justify-center">
-             <div className="bg-indigo-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg">
-                Mysuru
-             </div>
+             <button 
+                onClick={fetchCurrentLocation} 
+                disabled={isLocating}
+                className="bg-indigo-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg flex items-center hover:bg-indigo-700 transition-colors disabled:opacity-80 active:scale-95"
+             >
+                {isLocating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Navigation className="w-4 h-4 mr-2" />}
+                {isLocating ? 'Locating...' : 'Use Current Location'}
+             </button>
           </div>
         </div>
 
+        {locationError && (
+          <div className="bg-red-50 text-red-700 p-4 rounded-2xl mb-6 flex items-start text-sm font-medium border border-red-100">
+            <AlertCircle className="w-5 h-5 mr-3 shrink-0 mt-0.5 text-red-500" />
+            <p>{locationError}</p>
+          </div>
+        )}
+
         <h3 className="font-bold text-slate-900 mb-4 text-lg">Saved Addresses</h3>
         <div className="space-y-3 mb-8">
+          {currentLocation && (
+            <div 
+              onClick={() => setSelectedId('current')}
+              className={`p-5 rounded-3xl border-2 cursor-pointer transition-all ${selectedId === 'current' ? 'border-indigo-600 bg-indigo-50/50 shadow-sm' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+            >
+              <div className="flex items-start">
+                <Navigation className={`w-5 h-5 mr-3 mt-0.5 ${selectedId === 'current' ? 'text-indigo-600' : 'text-slate-400'}`} />
+                <div>
+                  <h4 className="font-bold text-slate-900">{currentLocation.name}</h4>
+                  <p className="text-sm text-slate-500 leading-tight mt-1 font-medium">{currentLocation.address}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {mockLocations.map(loc => (
             <div 
               key={loc.id} 

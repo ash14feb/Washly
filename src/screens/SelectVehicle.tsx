@@ -34,13 +34,13 @@ export const SelectVehicle = () => {
             className={`flex-1 flex items-center justify-center py-3 rounded-xl text-sm font-bold transition-all ${selectedType === 'car' ? 'bg-indigo-600 shadow-md text-white' : 'text-slate-600 hover:bg-slate-300'}`}
             onClick={() => updateBooking({ vehicleType: 'car' })}
           >
-            <Car className="w-4 h-4 mr-2" /> Car
+            <Car className={`w-5 h-5 mr-2 ${selectedType === 'car' ? 'drop-shadow-sm' : ''}`} strokeWidth={selectedType === 'car' ? 2 : 1.5} /> Car
           </button>
           <button 
             className={`flex-1 flex items-center justify-center py-3 rounded-xl text-sm font-bold transition-all ${selectedType === 'bike' ? 'bg-indigo-600 shadow-md text-white' : 'text-slate-600 hover:bg-slate-300'}`}
             onClick={() => updateBooking({ vehicleType: 'bike' })}
           >
-            <Bike className="w-4 h-4 mr-2" /> Bike
+            <Bike className={`w-5 h-5 mr-2 ${selectedType === 'bike' ? 'drop-shadow-sm' : ''}`} strokeWidth={selectedType === 'bike' ? 2 : 1.5} /> Bike
           </button>
         </div>
 

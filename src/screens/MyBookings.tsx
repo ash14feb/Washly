@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useBooking } from '../context/BookingContext';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, ChevronLeft } from 'lucide-react';
 import { Button } from '../components/ui';
 import { Booking } from '../types';
 
 export const MyBookings = () => {
   const { bookings } = useBooking();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'completed'>('upcoming');
+  const navigate = useNavigate();
 
   const filteredBookings = bookings.filter(b => 
     activeTab === 'upcoming' ? b.status === 'upcoming' : b.status === 'completed'
@@ -15,7 +17,12 @@ export const MyBookings = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pb-20">
       <div className="bg-slate-900 px-6 pt-12 pb-6 shadow-sm sticky top-0 z-20 rounded-b-[2rem]">
-        <h1 className="text-2xl font-bold text-white mb-6">My Bookings</h1>
+        <div className="flex items-center mb-6">
+          <button onClick={() => navigate('/home')} className="p-2 -ml-2 mr-2 rounded-full hover:bg-slate-800 transition-colors">
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+          <h1 className="text-2xl font-bold text-white">My Bookings</h1>
+        </div>
         
         <div className="flex bg-slate-800 p-1.5 rounded-2xl">
           <button 
@@ -52,7 +59,7 @@ export const MyBookings = () => {
   );
 };
 
-const BookingCard = ({ booking }: { booking: Booking }) => {
+const BookingCard = ({ booking }: { booking: Booking; key?: React.Key }) => {
   return (
     <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
       <div className="flex justify-between items-start mb-4 border-b border-slate-100 pb-4">
@@ -68,13 +75,17 @@ const BookingCard = ({ booking }: { booking: Booking }) => {
         </div>
       </div>
       
-      <div className="space-y-3 mb-6">
-        <div className="flex items-center text-sm text-slate-600 font-medium">
-          <Calendar className="w-4 h-4 mr-3 text-indigo-400" />
+      <div className="space-y-4 mb-6">
+        <div className="flex items-center text-sm text-slate-700 font-bold">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center mr-3 border border-indigo-100 shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)]">
+            <Calendar className="w-4 h-4 text-indigo-600 drop-shadow-sm" strokeWidth={2} />
+          </div>
           {booking.date} at {booking.time}
         </div>
-        <div className="flex items-center text-sm text-slate-600 font-medium">
-          <MapPin className="w-4 h-4 mr-3 text-indigo-400" />
+        <div className="flex items-center text-sm text-slate-700 font-bold">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center mr-3 border border-indigo-100 shadow-[inset_0_1px_2px_rgba(255,255,255,0.8)]">
+            <MapPin className="w-4 h-4 text-indigo-600 drop-shadow-sm" strokeWidth={2} />
+          </div>
           {booking.location.name}
         </div>
       </div>
